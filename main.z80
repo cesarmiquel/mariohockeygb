@@ -25,11 +25,12 @@ SECTION	"start",HOME[$0100]
 ; ROM HEADER and ASCII character set
 ; ****************************************************************************************
 ; ROM header
-	ROM_HEADER	ROM_NOMBC, ROM_SIZE_32KBYTE, RAM_SIZE_0KBYTE
+    ROM_HEADER	ROM_NOMBC, ROM_SIZE_32KBYTE, RAM_SIZE_0KBYTE
+
 INCLUDE "inc/memory.z80"
 
 ; Include tiles
-INCLUDE "image-02-real.inc"
+INCLUDE "image-03-real.inc"
 
 
 RANDNUM equ     $c000
@@ -60,19 +61,21 @@ init:
 	ld	[rSCY], a		
         ld      [RANDNUM],a
 	call	StopLCD			; YOU CAN NOT LOAD $8000 WITH LCD ON
-	ld	hl, image02real_tile_data
+	ld	hl, image03real_tile_data
 	ld	de, _VRAM		; $8000
-	ld	bc, image02real_tile_data_size     ; 128 tiles
+	ld	bc, image03real_tile_data_size     ; 128 tiles
 	call	mem_Copy                ; load tile data
-
-	ld	a, LCDCF_ON|LCDCF_BG8000|LCDCF_BG9800|LCDCF_BGON|LCDCF_OBJ8|LCDCF_OBJON ; *hs* see gbspec.txt lines 1525-1565 and gbhw.inc lines 70-86
-	ld	[rLCDC], a	
 
 	ld	a, 0
 	ld	de, _SCRN0
-	ld	hl, image02real_map_data
+	ld	hl, image03real_map_data
 	ld	bc, SCRN_VX_B * SCRN_VY_B
         call    mem_CopyVRAM
+
+        ; *hs* see gbspec.txt lines 1525-1565 and gbhw.inc lines 70-86
+	ld	a, LCDCF_ON|LCDCF_BG8000|LCDCF_BG9800|LCDCF_BGON|LCDCF_OBJ8|LCDCF_OBJOFF
+	ld	[rLCDC], a
+
 
 MainLoop:
 	halt
