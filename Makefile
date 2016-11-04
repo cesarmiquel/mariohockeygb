@@ -2,10 +2,11 @@
 # Build examples
 #
 
-all: demo01.gb
+all: mariohokey.gb
 
-demo01.gb: main.obj
-	rgblink -o roms/demo01.gb main.obj
+mariohokey.gb: main.obj
+	rgblink -o roms/mariohokey.gb main.obj
+	rgbfix -v -t "Mario Hockey" -p 0 roms/mariohokey.gb
 	rm $<
 
 %.obj: %.z80
