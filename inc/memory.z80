@@ -7,12 +7,6 @@
 
 ;If all of these are already defined, don't do it again.
 
-IF      !DEF(MEMORY1_ASM)
-
-MEMORY1_ASM  SET  1
-
-        INCLUDE "inc/gbhw.z80"
-
 ; Macro that pauses until VRAM available.
 
 lcd_WaitVRAM: MACRO
@@ -148,7 +142,5 @@ mem_CopyVRAM::
 	ret
 
         POPS           ; Pop the current section off of assember stack.
-
-        ENDC    ;MEMORY1_ASM
 
 ; vim: se ts=8 sw=8 expandtab:
