@@ -1,10 +1,17 @@
 
 INCLUDE "inc/gbhw.z80"              ; standard hardware definitions from devrs.com
 
+; Include tiles
+INCLUDE "resources/cut-constants.inc"
+
+; Include Memory location definitions
+INCLUDE "inc/memory-locations.inc"
+
+
 	
 ; IRQs
 SECTION	"Vblank",HOME[$0040]
-	reti
+	jp      CURRENT_VBLANK_HNDLR
 SECTION	"LCDC",HOME[$0048]
 	reti
 SECTION	"Timer_Overflow",HOME[$0050]
@@ -29,12 +36,6 @@ SECTION	"start",HOME[$0100]
 
 INCLUDE "inc/memory.z80"
 
-; Include tiles
-INCLUDE "image-03-real.inc"
-
-
-RANDNUM equ     $c000
-
 ; ****************************************************************************************
 ; Main code Initialization:
 ; set the stack pointer, enable interrupts, set the palette, set the screen relative to the window
@@ -45,9 +46,31 @@ begin:
 	di
 	ld	sp, $ffff		; set the stack pointer to highest mem location + 1
 
+; Configure animation (VBLANK) handler. On every VBLANK interrupt we increase our frame Counter
+; and then call a custom animation routine that handles whatever animation needs to happen
+        call    ClearFrameCounter
+        ld      hl,CURRENT_VBLANK_HNDLR ; Enable Fade animation by setting as current animation CALL FadeInHandler to first 3 bytes
+        ld      de,UpdateAnimation
+        ld      a,$cd                   ; CALL opcode
+        ld      [hl+],a
+        ld      a,e
+        ld      [hl+],a
+        ld      a,d
+        ld      [hl+],a
+        xor     a                       ; COPY 0 (NOP) to next 3 bytes
+        ld      [hl+],a
+        ld      [hl+],a
+        ld      [hl+],a
+        ld      a,$d9                   ; COPY a RETI instruction
+        ld      [hl+],a
+
+        xor     a                       ; Disable animation
+        ld      [ANIMATION_ACTIVE], a
+
 ; NEXT FOUR LINES FOR SETTING UP SPRITES *hs*
 	ld	a, IEF_VBLANK
 	ld	[rIE],a			; ENABLE ONLY VBLANK INTERRUPT
+
 	ei				; LET THE INTS FLY
 
 init:
@@ -59,22 +82,119 @@ init:
 	xor	a			; SET SCREEN TO TO UPPER RIGHT HAND CORNER
 	ld	[rSCX], a
 	ld	[rSCY], a		
-        ld      [RANDNUM],a
-	call	StopLCD			; YOU CAN NOT LOAD $8000 WITH LCD ON
-	ld	hl, image03real_tile_data
-	ld	de, _VRAM		; $8000
-	ld	bc, image03real_tile_data_size     ; 128 tiles
-	call	mem_Copy                ; load tile data
-
-	ld	a, 0
-	ld	de, _SCRN0
-	ld	hl, image03real_map_data
-	ld	bc, SCRN_VX_B * SCRN_VY_B
-        call    mem_CopyVRAM
 
         ; *hs* see gbspec.txt lines 1525-1565 and gbhw.inc lines 70-86
 	ld	a, LCDCF_ON|LCDCF_BG8000|LCDCF_BG9800|LCDCF_BGON|LCDCF_OBJ8|LCDCF_OBJOFF
 	ld	[rLCDC], a
+
+; -------------------------------------------------------------------------------------------
+; Cut 01
+; -------------------------------------------------------------------------------------------
+cut01:
+
+        ; Set palette to 0 so that we don't see anything
+	ld	a, %11111111
+	ld	[rBGP], a
+
+        ; Load bitmap
+	ld	hl, cut01_tile_data
+	ld	de, _VRAM		; $8000
+	ld	bc, cut01_tile_data_size     ; 128 tiles
+	call	mem_CopyVRAM            ; load tile data
+
+	ld	a, 0
+	ld	de, _SCRN0
+	ld	hl, cut01_map_data
+	ld	bc, SCRN_VX_B * SCRN_VY_B
+        call    mem_CopyVRAM
+
+	call	StartLCD
+
+        ; Trigger FadeIn Animation
+        ld      de,FadeInHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+        ; Wait a bit
+        ld      de,ShortDelayHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+ 
+        ; Trigger FadeOut Animation
+        ld      de,FadeOutHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+; -------------------------------------------------------------------------------------------
+; Cut 02
+; -------------------------------------------------------------------------------------------
+cut02:
+
+        ; Load bitmap
+	ld	hl, cut02_tile_data
+	ld	de, _VRAM
+	ld	bc, cut02_tile_data_size    
+	call	mem_CopyVRAM
+
+	ld	a, 0
+	ld	de, _SCRN0
+	ld	hl, cut02_map_data
+	ld	bc, SCRN_VX_B * SCRN_VY_B
+        call    mem_CopyVRAM
+
+        ; Trigger FadeIn Animation
+        ld      de,FadeInHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+        ; Wait a bit
+        ld      de,ShortDelayHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+ 
+        ; Trigger FadeOut Animation
+        ld      de,FadeOutHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+ 
+; -------------------------------------------------------------------------------------------
+; Cut 03
+; -------------------------------------------------------------------------------------------
+cut03:
+
+        ; Load bitmap
+	ld	hl, cut03_tile_data
+	ld	de, _VRAM		; $8000
+	ld	bc, cut03_tile_data_size     ; 128 tiles
+	call	mem_CopyVRAM            ; load tile data
+
+	ld	a, 0
+	ld	de, _SCRN0
+	ld	hl, cut03_map_data
+	ld	bc, SCRN_VX_B * SCRN_VY_B
+        call    mem_CopyVRAM
+
+
+        ; Trigger FadeIn Animation
+        ld      de,FadeInHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+        ; Wait a bit
+        ld      de,ShortDelayHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+        call    WaitAnimation
+ 
+        ; Trigger FadeOut Animation
+        ld      de,FadeOutHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+ 
+
+
+
+
 
 
 MainLoop:
@@ -82,6 +202,78 @@ MainLoop:
 	nop				; always put NOP after HALT (gbspec.txt lines 514-578)
 	jr	MainLoop
 
+; -------------------------------------------------------------------------------------------
+; Fade In Animation
+; -------------------------------------------------------------------------------------------
+FadeInHandler:
+        ld      a,[FRAME_COUNTER+1]
+        cp      $20
+        jp      c, .return
+        cp      $30
+        jp      c, .fade_step_01
+        cp      $39
+        jp      c, .fade_step_02
+        cp      $40
+        jp      c, .fade_step_03
+        xor     a                       ; Done. Turn off animation
+        ld      [ANIMATION_ACTIVE],a
+        ret     ; done
+.fade_step_01:
+        ld      a,%11111110
+	ld	[rBGP], a
+        ret
+.fade_step_02:
+        ld      a,%11111001
+	ld	[rBGP], a
+        ret
+.fade_step_03:
+        ld      a,%11100100
+	ld	[rBGP], a
+.return
+        ret
+
+; -------------------------------------------------------------------------------------------
+; Fade Out Animation
+; -------------------------------------------------------------------------------------------
+FadeOutHandler:
+        ld      a,[FRAME_COUNTER+1]
+        cp      $20
+        jp      c, .return
+        cp      $30
+        jp      c, .fade_step_01
+        cp      $39
+        jp      c, .fade_step_02
+        cp      $40
+        jp      c, .fade_step_03
+        xor     a                       ; Done. Turn off animation
+        ld      [ANIMATION_ACTIVE],a
+        ret     ; done
+.fade_step_01:
+        ld      a,%11111001
+	ld	[rBGP], a
+        ret
+.fade_step_02:
+        ld      a,%11111110
+	ld	[rBGP], a
+        ret
+.fade_step_03:
+        ld      a,%11111111
+	ld	[rBGP], a
+.return
+        ret
+
+; -------------------------------------------------------------------------------------------
+; Short Delay Animation
+; -------------------------------------------------------------------------------------------
+ShortDelayHandler:
+        ld      a,[FRAME_COUNTER+1]
+        cp      $20
+        jp      c, .return
+        xor     a                       ; Done. Turn off animation
+        ld      [ANIMATION_ACTIVE],a
+.return
+        ret
+ 
 ; ****************************************************************************************
 ; StopLCD:
 ; turn off LCD if it is on
@@ -105,5 +297,84 @@ StopLCD:
         ld      [rLCDC],a
 
         ret
+
+StartLCD:
+        ld      a,[rLCDC]
+        set     7,a             ; Set bit 7 of LCDC
+        ld      [rLCDC], a
+        ret
+
+; ****************************************************************************************
+; Update Animation Counter
+; If the ANIMATION_ACTIVE flag is set increase frame counter
+; ****************************************************************************************
+UpdateAnimation:
+        push    af
+        push    hl
+        ld      a,[ANIMATION_ACTIVE]    ; Check if animation is active
+        jp      z, .return
+        ld      a,[FRAME_COUNTER]
+        ld      h,a
+        ld      a,[FRAME_COUNTER + 1]
+        ld      l,a
+        inc     hl
+        ld      a,h
+        ld      [FRAME_COUNTER],a
+        ld      a,l
+        ld      [FRAME_COUNTER + 1],a
+.return
+        pop     hl
+        pop     af
+        ret
+
+; Clear frame counter
+ClearFrameCounter:
+        xor     a
+        ld      [FRAME_COUNTER],a
+        ld      [FRAME_COUNTER + 1],a
+        ret
+
+; ------------------------------------------------------------------------------------------
+; Set current animation handler to routine in location given by register DE
+; ------------------------------------------------------------------------------------------
+SetAnimationHandler:
+        push    hl
+        push    af
+        ld      hl,CURRENT_VBLANK_HNDLR + 3
+        ld      a,$cd                           ; CALL opcode
+        ld      [hl+],a
+        ld      a,e
+        ld      [hl+],a
+        ld      a,d
+        ld      [hl+],a
+        pop     af
+        pop     hl
+        ret
+
+WaitAnimation:
+        xor     a
+        ld      [FRAME_COUNTER],a
+        ld      [FRAME_COUNTER + 1],a
+        inc     a
+        ld      [ANIMATION_ACTIVE],a
+
+.loop
+        ld      a,[ANIMATION_ACTIVE]
+        jp      z, .done
+        halt
+        nop
+        jp      .loop
+.done
+        ret
+
+        
+
+; ****************************************************************************************
+; RESOURCES
+; ****************************************************************************************
+
+INCLUDE "resources/cut-01.inc"
+INCLUDE "resources/cut-02.inc"
+INCLUDE "resources/cut-03.inc"
 
 ; vim: se ts=8 sw=8 expandtab:
