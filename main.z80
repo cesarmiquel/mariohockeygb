@@ -206,6 +206,7 @@ MainLoop:
 ; Fade In Animation
 ; -------------------------------------------------------------------------------------------
 FadeInHandler:
+        push    af
         ld      a,[FRAME_COUNTER+1]
         cp      $20
         jp      c, .return
@@ -217,25 +218,27 @@ FadeInHandler:
         jp      c, .fade_step_03
         xor     a                       ; Done. Turn off animation
         ld      [ANIMATION_ACTIVE],a
-        ret     ; done
+        jp      .return
 .fade_step_01:
         ld      a,%11111110
 	ld	[rBGP], a
-        ret
+        jp      .return
 .fade_step_02:
         ld      a,%11111001
 	ld	[rBGP], a
-        ret
+        jp      .return
 .fade_step_03:
         ld      a,%11100100
 	ld	[rBGP], a
 .return
+        pop     af
         ret
 
 ; -------------------------------------------------------------------------------------------
 ; Fade Out Animation
 ; -------------------------------------------------------------------------------------------
 FadeOutHandler:
+        push    af
         ld      a,[FRAME_COUNTER+1]
         cp      $20
         jp      c, .return
@@ -247,19 +250,20 @@ FadeOutHandler:
         jp      c, .fade_step_03
         xor     a                       ; Done. Turn off animation
         ld      [ANIMATION_ACTIVE],a
-        ret     ; done
+        jp      .return
 .fade_step_01:
         ld      a,%11111001
 	ld	[rBGP], a
-        ret
+        jp      .return
 .fade_step_02:
         ld      a,%11111110
 	ld	[rBGP], a
-        ret
+        jp      .return
 .fade_step_03:
         ld      a,%11111111
 	ld	[rBGP], a
 .return
+        pop     af
         ret
 
 ; -------------------------------------------------------------------------------------------
@@ -360,6 +364,7 @@ WaitAnimation:
 
 .loop
         ld      a,[ANIMATION_ACTIVE]
+        cp      $0
         jp      z, .done
         halt
         nop
