@@ -15,6 +15,18 @@ lcd_WaitVRAM: MACRO
         jr      nz,@-4          ; ----+
         ENDM
 
+lcd_WaitVBlank: MACRO
+        ld      a,[rLY]
+        cp      $91
+        jr      c,@-4
+        ENDM
+
+lcd_WaitLine: MACRO
+        ld      a,[rLY]
+        cp      \1
+        jr      c,@-4
+        ENDM
+
         PUSHS           ; Push the current section onto assember stack.
 
         SECTION "Memory1 Code",HOME

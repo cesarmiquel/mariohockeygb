@@ -185,7 +185,7 @@ cut03:
         call    SetAnimationHandler
         call    WaitAnimation
 
-        ; Trigger FadeIn Animation
+        ; Trigger Scroll Animation
         ld      de,ScrollHandNW
         call    SetAnimationHandler
         call    WaitAnimation
@@ -193,6 +193,105 @@ cut03:
         ; Wait a bit
         ld      de,ShortDelayHandler
         call    SetAnimationHandler
+        call    WaitAnimation
+ 
+        ; Trigger FadeOut Animation
+        ld      de,FadeOutHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+ 
+; -------------------------------------------------------------------------------------------
+; Cut 04
+; -------------------------------------------------------------------------------------------
+cut04:
+
+        ; Load bitmap
+        ld      hl, cut04_tile_data
+        ld      de, _VRAM               ; $8000
+        ld      bc, cut04_tile_data_size     ; 128 tiles
+        call    mem_CopyVRAM            ; load tile data
+
+        ld      a, 0
+        ld      de, _SCRN0
+        ld      hl, cut04_map_data
+        ld      bc, SCRN_VX_B * SCRN_VY_B
+        call    mem_CopyVRAM
+
+        ; Turn on regular palette
+        ld      a,%11100100
+        ld      [rBGP], a
+
+        ; Remove last animation handler
+        call    ClearAnimationHandler
+
+        ;
+        ; Animation loop
+        ;
+        lcd_WaitVBlank                  ; Wait for VBlank to start
+        ld      a, $30                  ; Save initial separation to stack
+        ld      [ANIMATION_VAR_01], a
+        ld      a, -$30                  ; Save initial separation to stack
+        ld      [ANIMATION_VAR_02], a
+
+        xor     a                       ; Make sure SCX = 0
+        ld      [rSCX], a
+
+        call    ClearFrameCounter       ; Start animation counter
+        ld      a, $1
+        ld      [ANIMATION_ACTIVE], a
+
+.animation_loop:
+        lcd_WaitLine    $30
+        ld      a, [ANIMATION_VAR_01]
+        ld      [rSCX], a
+
+        lcd_WaitLine    $40
+        ld      a, [ANIMATION_VAR_02]
+        ld      [rSCX], a
+
+        lcd_WaitLine    $50
+        ld      a, [ANIMATION_VAR_01]
+        ld      [rSCX], a
+
+        lcd_WaitLine    $60
+        ld      a, [ANIMATION_VAR_02]
+        ld      [rSCX], a
+        
+        lcd_WaitLine    $70
+        ld      a, [ANIMATION_VAR_01]
+        ld      [rSCX], a
+
+.wait_vblank
+        lcd_WaitVBlank
+
+        ld      a, [ANIMATION_VAR_02]
+        ld      [rSCX], a
+
+        ; Wait for 1 line again
+        ld      a,[rLY]
+        cp      $1
+        jr      nz,@-4
+
+        ld      a, [ANIMATION_VAR_01]
+        dec     a
+        dec     a
+        dec     a
+        cp      $0
+        jp      z,.finish_loop
+        ld      [ANIMATION_VAR_01],a
+        ld      a, [ANIMATION_VAR_02]
+        inc     a
+        inc     a
+        inc     a
+        ld      [ANIMATION_VAR_02],a
+        jp      .animation_loop
+
+.finish_loop:
+ 
+        ; Wait a bit
+        ld      de,ShortDelayHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
         call    WaitAnimation
  
         ; Trigger FadeOut Animation
@@ -386,6 +485,17 @@ SetAnimationHandler:
         pop     hl
         ret
 
+ClearAnimationHandler:
+        push    hl
+        ld      hl,CURRENT_VBLANK_HNDLR + 3
+        xor     a
+        ld      [hl+],a
+        ld      [hl+],a
+        ld      [hl+],a
+        pop     hl
+        ret
+
+
 WaitAnimation:
         xor     a
         ld      [FRAME_COUNTER],a
@@ -412,5 +522,6 @@ WaitAnimation:
 INCLUDE "resources/cut-01.inc"
 INCLUDE "resources/cut-02.inc"
 INCLUDE "resources/cut-03.inc"
+INCLUDE "resources/cut-04.inc"
 
 ; vim: se ts=8 sw=8 expandtab:
