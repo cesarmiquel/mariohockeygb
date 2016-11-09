@@ -228,9 +228,9 @@ cut04:
         ; Animation loop
         ;
         lcd_WaitVBlank                  ; Wait for VBlank to start
-        ld      a, $30                  ; Save initial separation to stack
+        ld      a, $20                  ; Save initial separation to stack
         ld      [ANIMATION_VAR_01], a
-        ld      a, -$30                  ; Save initial separation to stack
+        ld      a, -$20                  ; Save initial separation to stack
         ld      [ANIMATION_VAR_02], a
 
         xor     a                       ; Make sure SCX = 0
@@ -275,12 +275,10 @@ cut04:
         ld      a, [ANIMATION_VAR_01]
         dec     a
         dec     a
-        dec     a
         cp      $0
         jp      z,.finish_loop
         ld      [ANIMATION_VAR_01],a
         ld      a, [ANIMATION_VAR_02]
-        inc     a
         inc     a
         inc     a
         ld      [ANIMATION_VAR_02],a
