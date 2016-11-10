@@ -5,7 +5,7 @@
 all: mariohokey.gb
 
 mariohokey.gb: main.obj
-	rgblink -o roms/mariohokey.gb main.obj
+	rgblink -n roms/mariohokey.sym -m roms/mariohokey.map -o roms/mariohokey.gb main.obj
 	rgbfix -v -t "Mario Hockey" -p 0 roms/mariohokey.gb
 	rm $<
 
