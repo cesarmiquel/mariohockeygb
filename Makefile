@@ -13,5 +13,5 @@ mariohokey.gb: main.obj
 	rgbasm -i inc/ -o $@  $<
 
 clean:
-	rm -f roms/*.gb
+	rm -f roms/*.gb roms/*.sym roms/*.map
 	rm -f *.obj
