@@ -514,9 +514,10 @@ WaitAnimation:
         
 
 ; ****************************************************************************************
-; RESOURCES
+; RESOURCES - back 1
 ; ****************************************************************************************
 
+SECTION "Resources",ROMX
 INCLUDE "resources/cut-01.inc"
 INCLUDE "resources/cut-02.inc"
 INCLUDE "resources/cut-03.inc"
