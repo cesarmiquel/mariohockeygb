@@ -1,0 +1,75 @@
+
+; -------------------------------------------------------------------------------------------
+; Cut 03
+; -------------------------------------------------------------------------------------------
+cut03:
+
+        ; Load bitmap
+        ld      hl, cut03_tile_data
+        ld      de, _VRAM               ; $8000
+        ld      bc, cut03_tile_data_size     ; 128 tiles
+        call    mem_CopyVRAM            ; load tile data
+
+        ld      a, 0
+        ld      de, _SCRN0
+        ld      hl, cut03_map_data
+        ld      bc, SCRN_VX_B * SCRN_VY_B
+        call    mem_CopyVRAM
+
+        ; Move screen position
+        ld      a, 37
+        ld      [rSCX], a
+        ld      a, 74
+        ld      [rSCY], a
+
+        ; Trigger FadeIn Animation
+        ld      de,FadeInHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+        ; Trigger Scroll Animation
+        ld      de,ScrollHandNW
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+        ; Wait a bit
+        ld      de,ShortDelayHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+        ; Trigger FadeOut Animation
+        ld      de,FadeOutHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+        ret
+
+; -------------------------------------------------------------------------------------------
+; Scroll screen NW for Cut 3
+; -------------------------------------------------------------------------------------------
+ScrollHandNW:
+        push    af
+        ld      a,[ANIMATION_ACTIVE]    ; Check if animation is active
+        jp      z, .return
+        ld      a,[FRAME_COUNTER+1]
+        and     %00000001               ; Update every 2 ticks
+        jp      nz, .return
+        ld      a,[rSCX]
+        dec     a
+        jp      z, .stop_animation
+        ld      [rSCX], a
+        ld      a,[rSCY]
+        dec     a
+        dec     a
+        jp      z, .stop_animation
+        ld      [rSCY], a
+        jp      .return
+.stop_animation
+        xor     a                       ; Done. Turn off animation
+        ld      [ANIMATION_ACTIVE],a
+.return
+        pop     af
+        ret
+
+
+; vim: se ts=8 sw=8 expandtab:

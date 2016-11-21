@@ -1,0 +1,36 @@
+; -------------------------------------------------------------------------------------------
+; Cut 02
+; -------------------------------------------------------------------------------------------
+cut02:
+
+        ; Load bitmap
+        ld      hl, cut02_tile_data
+        ld      de, _VRAM
+        ld      bc, cut02_tile_data_size
+        call    mem_CopyVRAM
+
+        ld      a, 0
+        ld      de, _SCRN0
+        ld      hl, cut02_map_data
+        ld      bc, SCRN_VX_B * SCRN_VY_B
+        call    mem_CopyVRAM
+
+        ; Trigger FadeIn Animation
+        ld      de,FadeInHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+        ; Wait a bit
+        ld      de,ShortDelayHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+        ; Trigger FadeOut Animation
+        ld      de,FadeOutHandler
+        call    SetAnimationHandler
+        call    WaitAnimation
+
+        ret
+
+
+; vim: se ts=8 sw=8 expandtab:

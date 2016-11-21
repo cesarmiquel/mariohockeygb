@@ -8,7 +8,7 @@ INCLUDE "resources/cut-constants.inc"
 INCLUDE "inc/memory-locations.inc"
 
 
-        
+
 ; IRQs
 SECTION "Vblank",HOME[$0040]
         jp      CURRENT_VBLANK_HNDLR
@@ -81,253 +81,39 @@ init:
 
         xor     a                       ; SET SCREEN TO TO UPPER RIGHT HAND CORNER
         ld      [rSCX], a
-        ld      [rSCY], a               
+        ld      [rSCY], a
 
         ; *hs* see gbspec.txt lines 1525-1565 and gbhw.inc lines 70-86
         ld      a, LCDCF_ON|LCDCF_BG8000|LCDCF_BG9800|LCDCF_BGON|LCDCF_OBJ8|LCDCF_OBJOFF
         ld      [rLCDC], a
 
-; -------------------------------------------------------------------------------------------
-; Cut 01
-; -------------------------------------------------------------------------------------------
-cut01:
+;
+; Run the different cuts.
+;
 
-        ; Set palette to 0 so that we don't see anything
-        ld      a, %11111111
-        ld      [rBGP], a
+ShowCuts:
+        call    cut01
+        call    cut02
+        call    cut03
+        call    cut04
 
-        ; Load bitmap
-        ld      hl, cut01_tile_data
-        ld      de, _VRAM               ; $8000
-        ld      bc, cut01_tile_data_size     ; 128 tiles
-        call    mem_CopyVRAM            ; load tile data
+;
+; Just loop indefinivitely now... nothing much to do.
+;
 
-        ld      a, 0
-        ld      de, _SCRN0
-        ld      hl, cut01_map_data
-        ld      bc, SCRN_VX_B * SCRN_VY_B
-        call    mem_CopyVRAM
-
-        call    StartLCD
-
-        ; Trigger FadeIn Animation
-        ld      de,FadeInHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
-
-        ; Wait a bit
-        ld      de,ShortDelayHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
- 
-        ; Trigger FadeOut Animation
-        ld      de,FadeOutHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
-
-; -------------------------------------------------------------------------------------------
-; Cut 02
-; -------------------------------------------------------------------------------------------
-cut02:
-
-        ; Load bitmap
-        ld      hl, cut02_tile_data
-        ld      de, _VRAM
-        ld      bc, cut02_tile_data_size    
-        call    mem_CopyVRAM
-
-        ld      a, 0
-        ld      de, _SCRN0
-        ld      hl, cut02_map_data
-        ld      bc, SCRN_VX_B * SCRN_VY_B
-        call    mem_CopyVRAM
-
-        ; Trigger FadeIn Animation
-        ld      de,FadeInHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
-
-        ; Wait a bit
-        ld      de,ShortDelayHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
- 
-        ; Trigger FadeOut Animation
-        ld      de,FadeOutHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
- 
-; -------------------------------------------------------------------------------------------
-; Cut 03
-; -------------------------------------------------------------------------------------------
-cut03:
-
-        ; Load bitmap
-        ld      hl, cut03_tile_data
-        ld      de, _VRAM               ; $8000
-        ld      bc, cut03_tile_data_size     ; 128 tiles
-        call    mem_CopyVRAM            ; load tile data
-
-        ld      a, 0
-        ld      de, _SCRN0
-        ld      hl, cut03_map_data
-        ld      bc, SCRN_VX_B * SCRN_VY_B
-        call    mem_CopyVRAM
-
-        ; Move screen position
-        ld      a, 37
-        ld      [rSCX], a
-        ld      a, 74
-        ld      [rSCY], a
-
-        ; Trigger FadeIn Animation
-        ld      de,FadeInHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
-
-        ; Trigger Scroll Animation
-        ld      de,ScrollHandNW
-        call    SetAnimationHandler
-        call    WaitAnimation
-
-        ; Wait a bit
-        ld      de,ShortDelayHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
- 
-        ; Trigger FadeOut Animation
-        ld      de,FadeOutHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
- 
-; -------------------------------------------------------------------------------------------
-; Cut 04
-; -------------------------------------------------------------------------------------------
-cut04:
-
-        ; Load bitmap
-        ld      hl, cut04_tile_data
-        ld      de, _VRAM               ; $8000
-        ld      bc, cut04_tile_data_size     ; 128 tiles
-        call    mem_CopyVRAM            ; load tile data
-
-        ld      a, 0
-        ld      de, _SCRN0
-        ld      hl, cut04_map_data
-        ld      bc, SCRN_VX_B * SCRN_VY_B
-        call    mem_CopyVRAM
-
-        ; Turn on regular palette
-        ld      a,%11100100
-        ld      [rBGP], a
-
-        ; Remove last animation handler
-        call    ClearAnimationHandler
-
-        ;
-        ; Animation loop
-        ;
-        lcd_WaitVBlank                  ; Wait for VBlank to start
-        ld      a, $20                  ; Save initial separation to stack
-        ld      [ANIMATION_VAR_01], a
-        ld      a, -$20                  ; Save initial separation to stack
-        ld      [ANIMATION_VAR_02], a
-
-        xor     a                       ; Make sure SCX = 0
-        ld      [rSCX], a
-
-        call    ClearFrameCounter       ; Start animation counter
-        ld      a, $1
-        ld      [ANIMATION_ACTIVE], a
-
-.animation_loop:
-        lcd_WaitLine    $30
-        ld      a, [ANIMATION_VAR_01]
-        ld      [rSCX], a
-
-        lcd_WaitLine    $40
-        ld      a, [ANIMATION_VAR_02]
-        ld      [rSCX], a
-
-        lcd_WaitLine    $50
-        ld      a, [ANIMATION_VAR_01]
-        ld      [rSCX], a
-
-        lcd_WaitLine    $60
-        ld      a, [ANIMATION_VAR_02]
-        ld      [rSCX], a
-        
-        lcd_WaitLine    $70
-        ld      a, [ANIMATION_VAR_01]
-        ld      [rSCX], a
-
-.wait_vblank
-        lcd_WaitVBlank
-
-        ld      a, [ANIMATION_VAR_02]
-        ld      [rSCX], a
-
-        ; Wait for 1 line again
-        ld      a,[rLY]
-        cp      $1
-        jr      nz,@-4
-
-        ld      a, [ANIMATION_VAR_01]
-        dec     a
-        dec     a
-        cp      $0
-        jp      z,.finish_loop
-        ld      [ANIMATION_VAR_01],a
-        ld      a, [ANIMATION_VAR_02]
-        inc     a
-        inc     a
-        ld      [ANIMATION_VAR_02],a
-        jp      .animation_loop
-
-.finish_loop:
- 
-        ; Wait a bit
-        ld      de,ShortDelayHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
-        call    WaitAnimation
- 
-        ; Trigger FadeOut Animation
-        ld      de,FadeOutHandler
-        call    SetAnimationHandler
-        call    WaitAnimation
- 
-MainLoop:
+SleepLoop:
         halt
         nop                             ; always put NOP after HALT (gbspec.txt lines 514-578)
-        jr      MainLoop
+        jr      SleepLoop
 
-; -------------------------------------------------------------------------------------------
-; Scroll screen NW for Cut 3
-; -------------------------------------------------------------------------------------------
-ScrollHandNW:
-        push    af
-        ld      a,[ANIMATION_ACTIVE]    ; Check if animation is active
-        jp      z, .return
-        ld      a,[FRAME_COUNTER+1]
-        and     %00000011               ; Update every 4 ticks
-        jp      nz, .return
-        ld      a,[rSCX]
-        dec     a
-        jp      z, .stop_animation
-        ld      [rSCX], a
-        ld      a,[rSCY]
-        dec     a
-        dec     a
-        jp      z, .stop_animation
-        ld      [rSCY], a
-        jp      .return
-.stop_animation
-        xor     a                       ; Done. Turn off animation
-        ld      [ANIMATION_ACTIVE],a
-.return
-        pop     af
-        ret
+
+;
+; Include all cuts
+;
+INCLUDE "inc/cut-01.z80"
+INCLUDE "inc/cut-02.z80"
+INCLUDE "inc/cut-03.z80"
+INCLUDE "inc/cut-04.z80"
 
 
 ; -------------------------------------------------------------------------------------------
@@ -405,7 +191,7 @@ ShortDelayHandler:
         ld      [ANIMATION_ACTIVE],a
 .return
         ret
- 
+
 ; ****************************************************************************************
 ; StopLCD:
 ; turn off LCD if it is on
@@ -511,7 +297,7 @@ WaitAnimation:
 .done
         ret
 
-        
+
 
 ; ****************************************************************************************
 ; RESOURCES - back 1
