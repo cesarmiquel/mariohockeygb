@@ -76,6 +76,7 @@ begin:
 init:
         ld      a, %11100100            ; Window palette colors, from darkest to lightest
         ld      [rBGP], a               ; set background and window pallette
+        ld      a, %11100011            ; Window palette colors, from darkest to lightest
         ldh     [rOBP0],a               ; set sprite pallette 0 (choose palette 0 or 1 when describing the sprite)
         ldh     [rOBP1],a               ; set sprite pallette 1
 
@@ -87,15 +88,18 @@ init:
         ld      a, LCDCF_ON|LCDCF_BG8000|LCDCF_BG9800|LCDCF_BGON|LCDCF_OBJ8|LCDCF_OBJOFF
         ld      [rLCDC], a
 
+        call    install_dma_code
+
 ;
 ; Run the different cuts.
 ;
 
 ShowCuts:
         call    cut01
-        call    cut02
+;        call    cut02
         call    cut03
         call    cut04
+        call    cut06
 
 ;
 ; Just loop indefinivitely now... nothing much to do.
@@ -111,9 +115,10 @@ SleepLoop:
 ; Include all cuts
 ;
 INCLUDE "inc/cut-01.z80"
-INCLUDE "inc/cut-02.z80"
+;INCLUDE "inc/cut-02.z80"
 INCLUDE "inc/cut-03.z80"
 INCLUDE "inc/cut-04.z80"
+INCLUDE "inc/cut-06.z80"
 
 
 ; -------------------------------------------------------------------------------------------
@@ -135,15 +140,22 @@ FadeInHandler:
         jp      .return
 .fade_step_01:
         ld      a,%11111110
-        ld      [rBGP], a
+        ldh     [rBGP], a
+        ldh     [rOBP0],a
+        ldh     [rOBP1],a
         jp      .return
 .fade_step_02:
         ld      a,%11111001
-        ld      [rBGP], a
+        ldh     [rBGP], a
+        ldh     [rOBP0],a
+        ldh     [rOBP1],a
         jp      .return
 .fade_step_03:
         ld      a,%11100100
-        ld      [rBGP], a
+        ldh     [rBGP], a
+        ld      a,%11100011
+        ldh     [rOBP0],a
+        ldh     [rOBP1],a
 .return
         pop     af
         ret
@@ -168,14 +180,22 @@ FadeOutHandler:
 .fade_step_01:
         ld      a,%11111001
         ld      [rBGP], a
+        ld      a,%11111000
+        ldh     [rOBP0],a
+        ldh     [rOBP1],a
         jp      .return
 .fade_step_02:
         ld      a,%11111110
         ld      [rBGP], a
+        ld      a,%11111110
+        ldh     [rOBP0],a
+        ldh     [rOBP1],a
         jp      .return
 .fade_step_03:
         ld      a,%11111111
         ld      [rBGP], a
+        ldh     [rOBP0],a
+        ldh     [rOBP1],a
 .return
         pop     af
         ret
@@ -297,6 +317,25 @@ WaitAnimation:
 .done
         ret
 
+;
+; Copy DMA code to FF80
+;
+install_dma_code:
+
+        ld c, $80
+        ld b, 10
+        ld hl, dma_data
+.loop 
+        ld a, [hl+]
+        ld [c], a
+        inc c
+        dec b
+        jr nz, .loop
+        ret
+
+dma_data:
+DB $3e, $c2, $e0, $46, $3e      ; $c2 is $c200 = SPRITE_BUFFER
+DB $28, $3d, $20, $fd, $c9
 
 
 ; ****************************************************************************************
@@ -305,8 +344,9 @@ WaitAnimation:
 
 SECTION "Resources",ROMX
 INCLUDE "resources/cut-01.inc"
-INCLUDE "resources/cut-02.inc"
+;INCLUDE "resources/cut-02.inc"
 INCLUDE "resources/cut-03.inc"
 INCLUDE "resources/cut-04.inc"
+INCLUDE "resources/cut-06.inc"
 
 ; vim: se ts=8 sw=8 expandtab:
