@@ -46,6 +46,16 @@ cut04_tile_data_size        EQU $0CA0
 cut04_tile_count            EQU $CA
 
 ;
+; Cut 05 ------------------------------
+;
+cut05_tile_map_size         EQU $0280
+cut05_tile_map_width        EQU $20
+cut05_tile_map_height       EQU $14
+
+cut05_tile_data_size        EQU $0C60
+cut05_tile_count            EQU $C6
+
+;
 ; Cut 06 ------------------------------
 ;
 

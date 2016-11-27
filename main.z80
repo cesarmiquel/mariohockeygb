@@ -32,7 +32,7 @@ SECTION "start",HOME[$0100]
 ; ROM HEADER and ASCII character set
 ; ****************************************************************************************
 ; ROM header
-    ROM_HEADER  ROM_NOMBC, ROM_SIZE_32KBYTE, RAM_SIZE_0KBYTE
+    ROM_HEADER  ROM_MBC1, ROM_SIZE_32KBYTE, RAM_SIZE_0KBYTE
 
 INCLUDE "inc/memory.z80"
 
@@ -96,9 +96,10 @@ init:
 
 ShowCuts:
         call    cut01
-;        call    cut02
+        call    cut02
         call    cut03
         call    cut04
+        call    cut05
         call    cut06
 
 ;
@@ -115,9 +116,10 @@ SleepLoop:
 ; Include all cuts
 ;
 INCLUDE "inc/cut-01.z80"
-;INCLUDE "inc/cut-02.z80"
+INCLUDE "inc/cut-02.z80"
 INCLUDE "inc/cut-03.z80"
 INCLUDE "inc/cut-04.z80"
+INCLUDE "inc/cut-05.z80"
 INCLUDE "inc/cut-06.z80"
 
 
@@ -342,11 +344,14 @@ DB $28, $3d, $20, $fd, $c9
 ; RESOURCES - back 1
 ; ****************************************************************************************
 
-SECTION "Resources",ROMX
+SECTION "Resources01",ROMX,BANK[1]
 INCLUDE "resources/cut-01.inc"
-;INCLUDE "resources/cut-02.inc"
+INCLUDE "resources/cut-02.inc"
 INCLUDE "resources/cut-03.inc"
 INCLUDE "resources/cut-04.inc"
+
+SECTION "Resources02",ROMX,BANK[2]
+INCLUDE "resources/cut-05.inc"
 INCLUDE "resources/cut-06.inc"
 
 ; vim: se ts=8 sw=8 expandtab:

@@ -2,6 +2,10 @@
 ; Cut 06
 ; -------------------------------------------------------------------------------------------
 cut06:
+        ; Swicth to ROM bank 2
+        ld      a,$2
+        ld      [$2000],a
+
         ; Load Mario sprite info into the sprite buffer
         ld      hl, mario01_sprite_data
         ld      de, SPRITE_BUFFER
@@ -27,6 +31,10 @@ cut06:
         ld      hl, bowser01_map_data
         ld      bc, SCRN_VX_B * SCRN_VY_B
         call    mem_CopyVRAM
+
+        ; Swicth back to ROM bank 1
+        ld      a,$1
+        ld      [$2000],a
 
         ; Move screen position
         ld      a, 160
