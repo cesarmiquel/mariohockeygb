@@ -8,6 +8,8 @@ Original Tumblr post [here](http://gameboydemakes.tumblr.com/post/152535589132/t
 
 You can view the You Tube video of this code running [here](https://youtu.be/iEPghfKh2Sk)
 
+![GIF here](https://media.giphy.com/media/A8my3n0vQS3fy/giphy.gif)
+
 I took the original GIF images and wrote code to reproduce them on an actual Game Boy. This is still a work in progress and so far I have only implemented the first six cut scenes. I have attempted to reproduce them as faithfully as I can but unfortunately although the demake tries to follow all Game Boy limitations on hardware it doesn't take into account limitations on sprites so they can not be reproduced exactly as in the video. 
 
 # Compiling 
