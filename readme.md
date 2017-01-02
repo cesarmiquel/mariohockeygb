@@ -12,7 +12,7 @@ I took the original GIF images and wrote code to reproduce them on an actual Gam
 
 # Compiling 
 
-You need to have *rgbasm*, *rgblink* and *rgbfix* installed in your system as well as the *make* program. Just type **make** and you should see:
+You need to have [Rednex GameBoy Development System](https://github.com/bentley/rgbds) installed in your system as well as the *make* program. Just type **make** and you should see:
 
 
 ```bash
