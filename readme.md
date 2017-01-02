@@ -4,9 +4,7 @@ This is my attempt to code the intro cutscenes to **Mario Hockey** created by [2
 
 ![Mario Hokey Intro](http://68.media.tumblr.com/5a746f9b37dfb8d702f9e0a5426ed8a5/tumblr_ofvxpghlJr1tjm7rdo1_r1_400.gif)
 
-Original Tumblr post [here](http://gameboydemakes.tumblr.com/post/152535589132/the-intro-cutscene-to-mario-hockey-truly-fires-you)
-
-You can view the You Tube video of this code running [here](https://youtu.be/iEPghfKh2Sk)
+The original Tumblr post is [here](http://gameboydemakes.tumblr.com/post/152535589132/the-intro-cutscene-to-mario-hockey-truly-fires-you). You can view the You Tube video of this code running [here](https://youtu.be/iEPghfKh2Sk) and a smaller GIF here:
 
 ![GIF here](https://media.giphy.com/media/A8my3n0vQS3fy/giphy.gif)
 
