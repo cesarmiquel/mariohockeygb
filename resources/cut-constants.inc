@@ -73,4 +73,15 @@ bowser01_tile_map_height    EQU $14
 bowser01_tile_data_size     EQU $0810
 bowser01_tile_count         EQU $81
 
+;
+; Cut 07 ------------------------------
+;
+cut07_tile_map_size         EQU $0240
+cut07_tile_map_width        EQU $20
+cut07_tile_map_height       EQU $12
+
+cut07_tile_data_size        EQU $06B0
+cut07_tile_count            EQU $6B
+
+
 

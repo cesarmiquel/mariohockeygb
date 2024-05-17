@@ -1,0 +1,122 @@
+ROM Bank #0 (HOME):
+  SECTION: $0040-$0042 ($0003 bytes)
+  SECTION: $0048-$0048 ($0001 bytes)
+  SECTION: $0050-$0050 ($0001 bytes)
+  SECTION: $0058-$0058 ($0001 bytes)
+  SECTION: $0060-$0060 ($0001 bytes)
+  SECTION: $0100-$06D6 ($05D7 bytes)
+           $0150 = begin
+           $0684 = ClearFrameCounter
+           $0668 = UpdateAnimation
+           $06BF = install_dma_code
+           $01A2 = cut01
+           $01DF = cut02
+           $0215 = cut03
+           $0285 = cut04
+           $0337 = cut05
+           $03F3 = cut06
+           $0661 = StartLCD
+           $05BF = FadeInHandler
+           $068C = SetAnimationHandler
+           $06A5 = WaitAnimation
+           $0643 = ShortDelayHandler
+           $0600 = FadeOutHandler
+           $025C = ScrollHandNW
+           $0283 = ScrollHandNW.return
+           $027F = ScrollHandNW.stop_animation
+           $069B = ClearAnimationHandler
+           $0321 = cut04.finish_loop
+           $02C1 = cut04.animation_loop
+           $03DD = cut05.finish_loop
+           $037D = cut05.animation_loop
+           $0463 = ScrollW
+           $05BD = ScrollW.return
+           $05B9 = ScrollW.stop_animation
+           $05FE = FadeInHandler.return
+           $05DE = FadeInHandler.fade_step_01
+           $05E9 = FadeInHandler.fade_step_02
+           $05F4 = FadeInHandler.fade_step_03
+           $0641 = FadeOutHandler.return
+           $061F = FadeOutHandler.fade_step_01
+           $062C = FadeOutHandler.fade_step_02
+           $0639 = FadeOutHandler.fade_step_03
+           $064F = ShortDelayHandler.return
+           $0681 = UpdateAnimation.return
+           $06BE = WaitAnimation.done
+           $06B0 = WaitAnimation.loop
+           $06CD = dma_data
+  SECTION: $0061-$00B6 ($0056 bytes)
+           $00A1 = mem_CopyVRAM
+           $0061 = mem_Set
+           $008B = mem_SetVRAM
+           $007B = mem_CopyMono
+           $006D = mem_Copy
+    SLACK: $39CC bytes
+
+ROM Bank #1:
+  SECTION: $4000-$79EF ($39F0 bytes)
+           $4240 = cut01_tile_data
+           $4000 = cut01_map_data
+           $4D60 = cut02_tile_data
+           $4B20 = cut02_map_data
+           $5DA0 = cut03_tile_data
+           $59A0 = cut03_map_data
+           $6D50 = cut04_tile_data
+           $6950 = cut04_map_data
+    SLACK: $0610 bytes
+
+ROM Bank #2:
+  SECTION: $4000-$5C03 ($1C04 bytes)
+           $4280 = cut05_tile_data
+           $4000 = cut05_map_data
+           $4EE0 = mario01_sprite_data
+           $4FD4 = mario01_tile_data
+           $54B4 = bowser01_tile_data
+           $5234 = bowser01_map_data
+    SLACK: $23FC bytes
+
+WRAM Bank #0:
+  EMPTY
+
+WRAM Bank #1:
+  EMPTY
+
+WRAM Bank #2:
+  EMPTY
+
+WRAM Bank #3:
+  EMPTY
+
+WRAM Bank #4:
+  EMPTY
+
+WRAM Bank #5:
+  EMPTY
+
+WRAM Bank #6:
+  EMPTY
+
+WRAM Bank #7:
+  EMPTY
+
+VRAM Bank #0:
+  EMPTY
+
+VRAM Bank #1:
+  EMPTY
+
+HRAM:
+  EMPTY
+
+SRAM Bank #0:
+  EMPTY
+
+SRAM Bank #1:
+  EMPTY
+
+SRAM Bank #2:
+  EMPTY
+
+SRAM Bank #3:
+  EMPTY
+
